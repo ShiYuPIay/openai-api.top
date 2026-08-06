@@ -1,0 +1,47 @@
+name = "openai-api-top"
+main = "src/index.js"
+compatibility_date = "2026-08-04"
+minify = true
+keep_vars = true
+workers_dev = false
+send_metrics = false
+
+[dependencies_instrumentation]
+enabled = false
+
+# The Worker talks to multiple or dynamically selected upstreams. Smart
+# Placement measures real traffic and only forwards execution when the total
+# request duration is expected to improve; otherwise it keeps execution local.
+[placement]
+mode = "smart"
+
+# Serve the Worker directly as the origin for the production apex domain.
+# Cloudflare creates and manages the required DNS record and TLS certificate.
+[[routes]]
+pattern = "openai-api.top"
+custom_domain = true
+
+# Stability-first network defaults. Additional parallel dials can reduce setup
+# latency on ideal links, but they also amplify socket failures and consume the
+# per-request outgoing-connection budget.
+[vars]
+PRELOAD_RACE_DIAL = "0"
+TCP_CONCURRENT_DIAL = "1"
+PROXY_CONCURRENT_DIAL = "1"
+OFF_LOG = "1"
+URL = "1101"
+
+# Persist a 1% sample of custom logs and runtime errors. Invocation logs remain
+# disabled to avoid one stored event for every long-lived tunnel invocation.
+[observability]
+enabled = true
+head_sampling_rate = 0.01
+
+[observability.logs]
+enabled = true
+invocation_logs = false
+
+# Required by the admin panel and persistent configuration.
+[[kv_namespaces]]
+binding = "KV"
+id = "3cc75fd0c485430289c86ea5cae5752b"

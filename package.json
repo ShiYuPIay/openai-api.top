@@ -1,0 +1,17 @@
+{
+  "name": "openai-api-top-worker",
+  "version": "4.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check:architecture": "node scripts/check-architecture.mjs",
+    "check:syntax": "find src test scripts -type f -name '*.js' -exec node --check {} \\; && find src test scripts -type f -name '*.mjs' -exec node --check {} \\; && find src test scripts -type f -name '*.cjs' -exec node --check {} \\;",
+    "test": "vitest run",
+    "validate": "npm run check:syntax && npm run check:architecture && npm test && wrangler deploy --dry-run --outdir=dist-worker"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "0.18.8",
+    "vitest": "4.1.10",
+    "wrangler": "4.114.0"
+  }
+}
